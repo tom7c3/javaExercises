@@ -28,6 +28,10 @@ public class Taxi
 	}
 	
 	boolean isFree() { return mFree; }
+	
+	public void setPosition( Vector2 v ) { mPosition = v; }
+	public void setFree( boolean b ) { mFree = b; }
+	
 	Vector2 getVelocity() { return mVelocity; }
 	Vector2 getPosition() { return mPosition; }
 	

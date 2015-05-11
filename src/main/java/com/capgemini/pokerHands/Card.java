@@ -2,7 +2,7 @@ package com.capgemini.pokerHands;
 
 public class Card 
 {
-	enum eCardType
+	public enum eCardType
 	{
 		CARD2,
 		CARD3,
@@ -23,12 +23,17 @@ public class Card
 	{
 		if ( s.length() != 2 )
 		{
-			throw new Exception();
+			throw new Exception("bad card name");
 		}
 		else
 		{
 			mCard = s.charAt(0);
 			mSuit = s.charAt(1);
+			
+			if ( mSuit != 'H' && mSuit != 'D' && mSuit != 'C' && mSuit != 'S' )
+			{
+				throw new Exception("Unknown card suit");
+			}
 			
 			switch ( mCard )
 			{
@@ -85,7 +90,7 @@ public class Card
 					mPower = 14;
 					break;
 				default:
-					throw new Exception();
+					throw new Exception("Unknown card type");
 			}
 			
 //			if ( mCard >= '2' || mCard <= '9' )

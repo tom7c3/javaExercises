@@ -5,10 +5,13 @@ import static org.junit.Assert.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import com.capgemini.pokerHands.Hand.FourOfAKind;
 import com.capgemini.pokerHands.Hand.FullHouse;
@@ -440,29 +443,29 @@ public class Poker
 		return 0;
 	}
 	
-	@Test
-	public void test()
-	{
-		System.out.println("THIS IS TEST");
-		try
-		{
-			Card card = new Card("ADE");
-			assertEquals("ASDASD", true, card.isAce());
-			card = new Card("5D");
-			assertEquals("ASDASD", false, card.isAce());
-		}
-		catch( Exception e )
-		{
-			System.out.println(e);
-		}
-	}
+//	@Test
+//	public void test()
+//	{
+//		System.out.println("THIS IS TEST");
+//		try
+//		{
+//			Card card = new Card("ADE");
+//			assertEquals("ASDASD", true, card.isAce());
+//			card = new Card("5D");
+//			assertEquals("ASDASD", false, card.isAce());
+//		}
+//		catch( Exception e )
+//		{
+//			System.out.println(e);
+//		}
+//	}
 	
-	public static void main(String[] args) throws IOException
-	{		
+	public static int getPlayer1Wins( String fileName ) throws Exception
+	{
 		int player1Wins = 0;
 		int player2Wins = 0;
 		
-		File file = new File("poker.txt");
+		File file = new File(fileName);
 		FileInputStream fstream = new FileInputStream( file.getAbsolutePath() );
 		BufferedReader reader = new BufferedReader(new InputStreamReader(fstream, "UTF-8"));
 		try 
@@ -478,7 +481,8 @@ public class Poker
 				
 				if ( fields.length != 10 )
 				{
-					System.out.println("ERROR");
+					throw new Exception("More than 10 cards");
+//					System.out.println("ERROR");
 				}
 				
 				try
@@ -490,7 +494,7 @@ public class Poker
 				}
 				catch ( Exception e )
 				{
-					
+					throw e;
 				}
 				
 				int winner = getWinner( player1, player2 );
@@ -510,6 +514,96 @@ public class Poker
 		  reader.close();
 		}
 		
-    	System.out.println( player1Wins + " : " + player2Wins );
+//    	System.out.println( player1Wins + " : " + player2Wins );
+    	return player1Wins;
 	}
+	
+	public static void main(String[] args) throws Exception
+	{		
+		System.out.println( getPlayer1Wins("poker.txt") );
+	}
+
+	@Test
+	public void shouldReturn3()
+	{
+		try
+		{
+			assertEquals(3, getPlayer1Wins("test1.txt") );
+		}
+		catch ( Exception e )
+		{
+			fail(e.getMessage());
+		}
+	}
+	
+	@Rule
+	public ExpectedException exception = ExpectedException.none();
+	
+	@Test
+	public void shouldThrowUnknownCardSuit() throws Exception
+	{
+		exception.expect(Exception.class);
+	    exception.expectMessage("Unknown card suit");
+	    
+	    getPlayer1Wins("test2.txt");
+	}
+	
+	@Test
+	public void shouldThrowUnknownCardType() throws Exception
+	{
+		exception.expect(Exception.class);
+	    exception.expectMessage("Unknown card type");
+	    
+	    getPlayer1Wins("test3.txt");
+	}
+	
+	@Test
+	public void shouldThrowMoreThan10Cards() throws Exception
+	{
+		exception.expect(Exception.class);
+	    exception.expectMessage("More than 10 cards");
+	    
+	    getPlayer1Wins("test4.txt");
+	}
+	
+	@Test
+	public void shouldThrowBadCardName() throws Exception
+	{
+		exception.expect(Exception.class);
+	    exception.expectMessage("bad card name");
+	    
+	    getPlayer1Wins("test5.txt");
+	}
+	
+	@Test
+	public void shouldThrowFileNotFound() throws Exception
+	{
+		exception.expect(FileNotFoundException.class);
+	    //exception.expectMessage("bad card name");
+	    
+	    getPlayer1Wins("notFoundFile");
+	}
+	
+	
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

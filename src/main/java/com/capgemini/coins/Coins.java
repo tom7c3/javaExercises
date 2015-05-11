@@ -1,8 +1,12 @@
 package com.capgemini.coins;
 
+import static org.junit.Assert.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import org.junit.Test;
 
 /**
  * Created by ldrygala on 2015-02-06.
@@ -37,42 +41,36 @@ public class Coins
     
     public static int findSolution(List<Integer> list )
     {
-
     	int max = 0;
-    	int value = solution(list);
-    	if ( value > max )
-			max = value;
-    	
-    	for ( int j = 0; j < list.size(); ++j )
-		{
-			System.out.print( list.get(j) );
-		}
-    	
-    	System.out.print( " : " + value + '\n' );
+    	int value = 0;
     	
     	for ( int i = 0; i < list.size(); ++i )
     	{    		
     		if ( list.get(i) == 0 )
     			list.set(i, 1);
-    		else
+    		else if ( list.get(i) == 1)
     			list.set(i, 0);
-    		
+    		else
+    			return -1;
+
     		value = solution(list);
     		
     		if ( value > max )
     			max = value;
     		
-    		for ( int j = 0; j < list.size(); ++j )
-    		{
-    			System.out.print( list.get(j) );
-    		}
-    		
-    		System.out.print( " : " + value + '\n' );
+//    		for ( int j = 0; j < list.size(); ++j )
+//    		{
+//    			System.out.print( list.get(j) );
+//    		}
+//    		
+//    		System.out.print( " : " + value + '\n' );
     		
     		if ( list.get(i) == 0 )
     			list.set(i, 1);
-    		else
+    		else if ( list.get(i) == 1 )
     			list.set(i, 0);
+    		else
+    			return -1;
     	}
     	
     	return max;
@@ -83,5 +81,50 @@ public class Coins
     	List<Integer> list = new ArrayList<Integer>(Arrays.asList(1,1,0,1,0,0));
     	System.out.println( findSolution(list) );
 	}
+    
+    @Test
+    public void shouldReturn0()
+    {
+    	assertEquals(0, findSolution( new ArrayList<Integer>(Arrays.asList(1)) ));
+    	assertEquals(0, findSolution( new ArrayList<Integer>(Arrays.asList(1,1)) ));
+    }
+
+    @Test
+    public void shouldReturn1()
+    {
+    	assertEquals(1, findSolution( new ArrayList<Integer>(Arrays.asList(1,1,1)) ));
+    }
+    
+    @Test
+    public void shouldReturn3()
+    {
+    	assertEquals(3, findSolution( new ArrayList<Integer>(Arrays.asList(1,0,0,1,0)) ));
+    }
+    
+    @Test
+    public void shouldReturn4()
+    {
+    	assertEquals(4, findSolution( new ArrayList<Integer>(Arrays.asList(1,1,0,1,0,0)) ));
+    	assertEquals(4, findSolution( new ArrayList<Integer>(Arrays.asList(0,0,0,0,0,0)) ));
+    	assertEquals(4, findSolution( new ArrayList<Integer>(Arrays.asList(1,1,1,1,1,1)) ));
+    }
+    
+    @Test
+    public void shouldReturnMinus1()
+    {
+    	assertEquals(-1, findSolution( new ArrayList<Integer>(Arrays.asList(1,5,1)) ));
+    	assertEquals(-1, findSolution( new ArrayList<Integer>(Arrays.asList(1,0,-1)) ));
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
 

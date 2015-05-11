@@ -1,5 +1,9 @@
 package com.capgemini.placeToSplit;
 
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
 /**
  * Given a non-empty array, return true if there is a place to split the array so that the sum of the numbers on one side is equal to the sum of the numbers on the other side.
  * Example:
@@ -11,10 +15,6 @@ package com.capgemini.placeToSplit;
  */
 public final class PlaceToSplit 
 {
-    private PlaceToSplit()
-    {
-    	
-    }
 
     public static boolean canBalance(int[] nums) 
     {
@@ -47,6 +47,33 @@ public final class PlaceToSplit
     	int[] table = {10,10};
     	System.out.println( canBalance(table) );
 	}
+    
+    @Test
+    public void shouldReturnTrue()
+    {
+    	int[] table = {10,10};
+    	assertEquals(true,  canBalance( table ) );
+    	
+    	table = new int[]{1,1,1,2,1};
+    	assertEquals(true,  canBalance( table ) );
+    
+    	table = new int[]{1,1,1,2,5};
+    	assertEquals(true,  canBalance( table ) );
+    }
+    
+    @Test
+    public void shouldReturnFalse()
+    {
+    	int[] table = {10,-10};
+    	assertEquals(false,  canBalance( table ) );
+    	
+    	table = new int[]{1,2,1,2,1};
+    	assertEquals(false,  canBalance( table ) );
+    
+    	table = new int[]{1,-1,1,2,5};
+    	assertEquals(false,  canBalance( table ) );
+    }
+    
 }
 
 

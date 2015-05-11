@@ -1,5 +1,9 @@
 package com.capgemini.pascalrectangle;
 
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+
 /**
  * Created by ldrygala on 2015-01-23.
  * 0                     1
@@ -26,24 +30,14 @@ public class PascalRectangle
     	for ( int i = 0; i < c; ++i )
     	{
     		tab[i] = 1;
-//    		System.out.print( 1 );
     	}
     	
-//    	System.out.println();
-    		
     	for ( int i = 0; i < r - 1;  ++i )
     	{	
     		for ( int j = 1; j < c; ++j )
     		{
     			tab[j] = tab[j - 1] + tab[j];  	
     		}
-    		
-//    		for ( int k = 0; k < c; ++k )
-//        	{
-//        		System.out.print( tab[k] );
-//        	}
-//    		
-//    		System.out.println();
     	}
     	
     	return tab[c - 1];	
@@ -53,4 +47,48 @@ public class PascalRectangle
 	{
     	System.out.println( pascal(5,5) );
 	}
+    
+    @Test
+    public void shouldReturn126()
+    {
+    	assertEquals(126, pascal(5,6) );
+    	assertEquals(126, pascal(6,5) );
+    }
+    
+    @Test
+    public void shouldReturn7()
+    {
+    	assertEquals(7, pascal(7,2) );
+    	assertEquals(7, pascal(7,2) );
+    }
+    
+    @Test
+    public void shouldReturn1()
+    {
+    	assertEquals(1, pascal(1,1) );
+    	assertEquals(1, pascal(1,20) );
+    	assertEquals(1, pascal(20,1) );
+    }
+    
+    @Test
+    public void shouldReturn0()
+    {
+    	assertEquals(0, pascal(0,1) );
+    	assertEquals(0, pascal(-1,20) );
+    	assertEquals(0, pascal(-5,-5) );
+    }
+    
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

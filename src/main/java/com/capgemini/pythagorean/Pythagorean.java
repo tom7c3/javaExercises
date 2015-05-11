@@ -1,5 +1,9 @@
 package com.capgemini.pythagorean;
 
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
 /**
  * A Pythagorean triplet is a set of three natural numbers, a < b < c, for which,
  * a2 + b2 = c2
@@ -9,9 +13,9 @@ package com.capgemini.pythagorean;
  */
 public class Pythagorean
 {
-	public static void findProduct( int value )
+	public static long findProduct( int value )
 	{
-		int products = 0;
+//		int products = 0;
 		
 		for ( int i = 0; i <= value; ++i )
 		{
@@ -21,44 +25,70 @@ public class Pythagorean
 				{
 					if ( i + j + k == value && i*i + j*j == k*k )
 					{
-						++products;
-						System.out.println( i + "*" + i + " + " + j + "*" + j + " = " + k + "*" + k );
-						System.out.println( "a = " + i);
-						System.out.println( "b = " + j);
-						System.out.println( "c = " + k);
-						System.out.println( i + " < " + j + " < " + k  + " = " + value);
+//						++products;
+//						System.out.println( i + "*" + i + " + " + j + "*" + j + " = " + k + "*" + k );
+//						System.out.println( "a = " + i);
+//						System.out.println( "b = " + j);
+//						System.out.println( "c = " + k);
+//						return i + " < " + j + " < " + k;
+						return i * j * k;
+//						System.out.println( i + " < " + j + " < " + k  + " = " + value);
 					}
 				}
 			}
 		
 		}
 		
-		if ( products == 0 )
-		{
-			System.out.println( "no product found");
-		}
-		else
-		{
-			System.out.println( "found " + products + " products");
-		}
+		return 0;
+		
+//		if ( products == 0 )
+//		{
+//			System.out.println( "no product found");
+//			return 0;
+//		}
+//		else
+//		{
+//			System.out.println( "found " + products + " products");
+//			return products;
+//		}
 	}
 	
 	public static void main(String[] args)
 	{
-		findProduct(1000);
-    	//System.out.println( getProduct(1000) );
+    	System.out.println( findProduct(200) );
+	}
+	
+	@Test
+	public void shouldReturn31875000()
+	{
+		assertEquals(31875000, findProduct(1000) );
+	}
+	
+	@Test
+	public void shouldReturn60()
+	{
+		assertEquals(60, findProduct(12) ); // 3 + 4 + 5 //
+	}
+	
+	@Test
+	public void shouldReturn0()
+	{
+		assertEquals(0, findProduct(13) ); 
+	}
+	
+	@Test
+	public void shouldReturn12180()
+	{
+		assertEquals(12180, findProduct(70) ); // 20 + 21 + 29 //
 	}
 }
 
-/*
- 
-1024 + 1764 = 2704
 
-c
- 
-a = 16
-b = 21
-c = 26
 
-c = 1000
-*/
+
+
+
+
+
+
+

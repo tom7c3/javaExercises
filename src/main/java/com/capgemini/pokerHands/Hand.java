@@ -78,30 +78,16 @@ public class Hand
 		private int mFifthPower = 0;
 	}
 	
-	enum eRank
-	{
-		HIGH_CARD,
-		ONE_PAIR,
-		TWO_PAIRS,
-		THREE_OF_A_KIND,
-		STRAIGHT,
-		FLUSH,
-		FULL_HOUSE,
-		FOUR_OF_A_KIND,
-		STRAIGHT_FLUSH,
-		ROYAL_FLUSH
-	};
-	
 	public Hand()
 	{
 		mCards = new ArrayList<Card>();
 	}
 	
-	public void addCard( Card card )
+	public void addCard( Card card ) throws Exception
 	{
 		if ( mCards.size() >= 5 )
 		{
-			
+			throw new Exception("Player could have only 5 cards");
 		}
 		
 		mCards.add(card);
@@ -128,17 +114,14 @@ public class Hand
 	{
 		int n = 0;
 		int[] amount = {0,0,0,0,0,0,0,0,0,0,0,0,0};
-		for ( int i = 0; i < 5; ++i )
-		{
-			++amount[ mCards.get(i).getPower() - 2 ];
-		}
+		loadPowers( amount );
 		
 		for ( int i = amount.length - 1; i >= 0; --i )
 		{
-			if ( amount[i] == 1 )
+//			if ( amount[i] == 1 )
+			if ( amount[i] > 0 )	
 			{
-				++n;
-				if ( n == next )
+				if ( ++n == next )
 					return i;
 			}
 		}
@@ -163,7 +146,7 @@ public class Hand
 	{
 		char suit = mCards.get(0).getSuit();
 		
-		//System.out.print(suit);
+//		System.out.print(suit);
 		
 		for ( int i = 1; i < mCards.size(); ++i )
 		{
@@ -171,15 +154,15 @@ public class Hand
 				return false;
 		}
 		
-		//System.out.print( mCards.size() );
-		
-		for ( int i = 0; i < mCards.size(); ++i )
-		{
+//		System.out.print( mCards.size() );
+//		
+//		for ( int i = 0; i < mCards.size(); ++i )
+//		{
 //			System.out.print( mCards.get(i).getCard());
 //			System.out.print( mCards.get(i).getSuit());
 //			System.out.print(" ");
-		}
-		
+//		}
+//		
 //		System.out.println();
 		
 		return true;
@@ -207,66 +190,12 @@ public class Hand
 		return false;
 	}
 	
-	public boolean hasTen()
-	{
-		for ( Card c : mCards )
-		{
-			if ( c.isTen() )
-				return true;
-		}
-		
-		return false;
-	}
-	
-	public boolean hasJack()
-	{
-		for ( Card c : mCards )
-		{
-			if ( c.isJack() )
-				return true;
-		}
-		
-		return false;
-	}
-	
-	public boolean hasQueen()
-	{
-		for ( Card c : mCards )
-		{
-			if ( c.isQueen() )
-				return true;
-		}
-		
-		return false;
-	}
-	
-	public boolean hasKing()
-	{
-		for ( Card c : mCards )
-		{
-			if ( c.isKing() )
-				return true;
-		}
-		
-		return false;
-	}
-	
-	public boolean hasAce()
-	{
-		for ( Card c : mCards )
-		{
-			if ( c.isAce() )
-				return true;
-		}
-		
-		return false;
-	}
-	
 	public boolean checkRoyalFlush()
 	{
 		if ( checkSameSuit() )
 		{
-			return hasTen() && hasJack() && hasQueen() && hasKing() && hasAce();
+			return hasCard( eCardType.CARDT) && hasCard( eCardType.CARDQ) && 
+				   hasCard( eCardType.CARDK) && hasCard( eCardType.CARDA);
 		}
 		
 		return false;
@@ -280,6 +209,14 @@ public class Hand
 		return false;
 	}
 	
+	public void loadPowers( int[] table )
+	{
+		for ( int i = 0; i < 5; ++i )
+		{
+			++table[ mCards.get(i).getPower() - 2 ];
+		}
+	}
+	
 	public FourOfAKind getFourOfAKind()
 	{
 		FourOfAKind foak = null;
@@ -287,24 +224,16 @@ public class Hand
 		int one = 0;
 		
 		int[] amount = {0,0,0,0,0,0,0,0,0,0,0,0,0};
-		for ( int i = 0; i < 5; ++i )
-		{
-			++amount[ mCards.get(i).getPower() - 2 ];
-		}
+		loadPowers( amount );
 		
-		for ( int i = 0; i < amount.length; ++i )
-		{
-			if ( amount[i] == 4 )
-				four = i + 2;
-			else if ( amount[i] == 1 )
-				one = i + 2;
-		}
+		four = getNextPower(amount, amount.length - 1, 4);
+		one = getNextPower(amount, amount.length - 1, 1);
 		
-		if ( four > 0 && one > 0 )
+		if ( four >= 0 && one >= 0 )
 		{
 			foak = new FourOfAKind();
-			foak.setFourOfKindPower(four);
-			foak.setFifthPower(one);
+			foak.setFourOfKindPower(four + 2);
+			foak.setFifthPower(one + 2);
 		}
 		
 		return foak;
@@ -317,24 +246,16 @@ public class Hand
 		int two = 0;
 		
 		int[] amount = {0,0,0,0,0,0,0,0,0,0,0,0,0};
-		for ( int i = 0; i < 5; ++i )
-		{
-			++amount[ mCards.get(i).getPower() - 2 ];
-		}
+		loadPowers( amount );
 		
-		for ( int i = 0; i < amount.length; ++i )
-		{
-			if ( amount[i] == 3 )
-				three = i + 2;
-			else if ( amount[i] == 2 )
-				two = i + 2;
-		}
+		three = getNextPower(amount, amount.length - 1, 3);
+		two = getNextPower(amount, amount.length - 1, 2);
 		
-		if ( three > 0 && two > 0 )
+		if ( three >= 0 && two >= 0 )
 		{
 			fh = new FullHouse();
-			fh.setThreeOfKindPower(three);
-			fh.setPairPower(two);
+			fh.setThreeOfKindPower(three + 2);
+			fh.setPairPower(two + 2);
 		}
 		
 		return fh;
@@ -371,46 +292,21 @@ public class Hand
 		int fifth = 0;
 			
 		int[] amount = {0,0,0,0,0,0,0,0,0,0,0,0,0};
-		for ( int i = 0; i < 5; ++i )
-		{
-			++amount[ mCards.get(i).getPower() - 2 ];
-		}
+		loadPowers( amount );
 		
-		for ( int i = 0; i < amount.length; ++i )
-		{
-			if ( amount[i] == 3 )
-			{
-				three = i + 2;
-			}
-		}
-		
+		three = getNextPower( amount, amount.length - 1, 3 );
 		int i = amount.length - 1;
-		for ( ; i >= 0; --i )
-		{
-			if ( amount[i] == 1 )
-			{
-				fourth = i + 2;
-				--i;
-				break;
-			}
-		}
+		i = getNextPower( amount, i, 1 );
+		fourth = i;
+		i = getNextPower( amount, i - 1, 1 );
+		fifth = i;
 		
-		for ( ; i >= 0; --i )
-		{
-			if ( amount[i] == 1 )
-			{
-				fifth = i + 2;
-				--i;
-				break;
-			}
-		}
-		
-		if ( three > 0 && fourth > 0 && fifth > 0 )
+		if ( three >= 0 && fourth >= 0 && fifth >= 0 )
 		{
 			toak = new ThreeOfAKind();
-			toak.setThreeOfKindPower(three);
-			toak.setFourthPower(fourth);
-			toak.setFifthPower(fifth);
+			toak.setThreeOfKindPower(three + 2);
+			toak.setFourthPower(fourth + 2);
+			toak.setFifthPower(fifth + 2);
 		}
 		
 		return toak;
@@ -424,47 +320,34 @@ public class Hand
 		int fifth = 0;
 		
 		int[] amount = {0,0,0,0,0,0,0,0,0,0,0,0,0};
-		for ( int i = 0; i < 5; ++i )
-		{
-			++amount[ mCards.get(i).getPower() - 2 ];
-		}
+		loadPowers( amount );
 		
 		int i = amount.length - 1;
-		for ( ; i >= 0; --i )
-		{
-			if ( amount[i] == 2 )
-			{
-				first = i + 2;
-				--i;
-				break;
-			}
-		}
+		i = getNextPower( amount, i, 2 );
+		first = i;
+		i = getNextPower( amount, i - 1, 2 );
+		second = i;
+		i = getNextPower( amount, amount.length - 1, 1 );
+		fifth = i;
 		
-		for ( ; i >= 0; --i )
-		{
-			if ( amount[i] == 2 )
-			{
-				second = i + 2;
-				--i;
-				break;
-			}
-		}
-		
-		for ( i = 0; i < amount.length; ++i )
-		{
-			if ( amount[i] == 1 )
-				fifth = i + 2;
-		}
-		
-		if ( first > 0 && second > 0 && fifth > 0 )
+		if ( first >= 0 && second >= 0 && fifth >= 0 )
 		{
 			tp = new TwoPair();
-			tp.setFirstPairPower(first);
-			tp.setSecondPairPower(second);
-			tp.setFifthPower(fifth);
+			tp.setFirstPairPower(first + 2);
+			tp.setSecondPairPower(second + 2);
+			tp.setFifthPower(fifth + 2);
 		}
 		
 		return tp;
+	}
+	
+	public int getNextPower( int[] table, int i, int amount )
+	{
+		for ( ; i >= 0; --i )
+			if ( table[i] == amount )
+				return i;
+	
+		return -1;
 	}
 	
 	public OnePair getOnePair()
@@ -476,56 +359,24 @@ public class Hand
 		int fifth = 0;
 		
 		int[] amount = {0,0,0,0,0,0,0,0,0,0,0,0,0};
-		for ( int i = 0; i < 5; ++i )
-		{
-			++amount[ mCards.get(i).getPower() - 2 ];
-		}
+		loadPowers( amount );
 		
-		for ( int i = 0; i < amount.length; ++i )
-		{
-			if ( amount[i] == 2 )
-				pair = i + 2;
-		}
-		
+		pair = getNextPower( amount, amount.length - 1, 2 );
 		int i = amount.length - 1;
-		for ( ; i >= 0; --i )
-		{
-			if ( amount[i] == 1 )
-			{
-				third = i + 2;
-				--i;
-				break;
-			}
-		}
+		i = getNextPower( amount, i, 1 );
+		third = i;
+		i = getNextPower( amount, i - 1, 1 );
+		fourth = i;
+		i = getNextPower( amount, i - 1, 1 );
+		fifth = i;
 		
-		for ( ; i >= 0; --i )
-		{
-			if ( amount[i] == 1 )
-			{
-				fourth = i + 2;
-				--i;
-				break;
-			}
-		}
-		
-		for ( ; i >= 0; --i )
-		{
-			if ( amount[i] == 1 )
-			{
-				fifth = i + 2;
-				--i;
-				break;
-			}
-		}
-		
-		
-		if ( pair > 0 && third > 0 && fourth > 0 && fifth > 0 )
+		if ( pair >= 0 && third >= 0 && fourth >= 0 && fifth >= 0 )
 		{
 			op = new OnePair();
-			op.setPairPower(pair);
-			op.setThirdPower(third);
-			op.setFourthPower(fourth);
-			op.setFifthPower(fifth);
+			op.setPairPower(pair + 2);
+			op.setThirdPower(third + 2);
+			op.setFourthPower(fourth + 2);
+			op.setFifthPower(fifth + 2);
 		}
 		
 		return op;
