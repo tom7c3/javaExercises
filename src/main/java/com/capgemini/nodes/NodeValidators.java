@@ -4,8 +4,11 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
+import java.util.Stack;
 
 /**
  * Created by ldrygala on 2015-02-09.
@@ -20,141 +23,64 @@ import java.util.Map;
  */
 public class NodeValidators 
 {	
-    public static void validateMethod(List<Node> nodes)
-    {
-//    	Map<String, ArrayList<Node>> map = new HashMap<String, ArrayList<Node>>();
-//    	Map<String, Node> map = new HashMap<String, Node>();
-//    	Map<Node, List<Node>> map = new HashMap<Node, List<Node>>();
-    	
-    	
-    	for ( Node node : nodes )
-    	{
-    		if ( node.getId().length() != 4 )
+    public static void validateMethod( List<Node> nodes ) throws Exception
+	{
+		Map<String, List<Node>> map = new HashMap<String, List<Node>>();
+
+		for ( Node n : nodes )
+		{
+			if ( n.getId().length() != 4 )
+    			throw new Exception("id does not have 4 characers");
+    		
+    		if ( n.getDescription().length() > 128 || n.getDescription().length() == 0 )
+    			throw new Exception("bad node description character length");
+    		
+    		if ( !n.getPredecessorId().isEmpty() )
     		{
-    			System.out.println("id does not have 4 characers");
+    			if ( !map.containsKey( n.getPredecessorId() ) )
+    				map.put( n.getPredecessorId(), new ArrayList<Node>() );
+    			List<Node> list = map.get(n.getPredecessorId());
+    			list.add(n);
     		}
-    		
-    		if ( node.getDescription().length() > 128 || node.getDescription().length() == 0 )
-    		{
-    			System.out.println("bad node description character length");
-    		}
-    		
-//    		map.put( node.getId(), new ArrayList<Node>() );
-//    		map.put(node.getId(), node);
-    	}
-    	
-//    	for( Node n : map.values() )
-//    	{
-//    		System.out.println(n.getId());
-//    	}
-    }
-    
-    
-    public static Map<String, List<Node>> getMap (List<Node> listOfTreeNodes) 
-    {
-        final Map<String, List<Node>> map = new HashMap<String, List<Node>>();
-        for (Node treeNode : listOfTreeNodes) 
-        {
-            if (map.get(treeNode.getPredecessorId()) != null) 
-            {
-                map.get(treeNode.getPredecessorId()).add(treeNode);
-            } 
-            else 
-            {
-                List<Node> list = new ArrayList<Node>();
-                list.add(treeNode);
-                map.put(treeNode.getPredecessorId(), list);
-            }
-        }
-        return map;
-    }
-    
-    public static Node constructTree (Map<String, List<Node>> map, Node node) 
-    {
-        if (map.containsKey(node)) 
-        {
-//            List<Node> list = map.get(node);
-            
-            node.addChild(constructTree(map, map.get(node).get(0)));
-        }
-        return node;
-    }
-    
-    public static void constructTree( ArrayList<Node> node )
-    {
-    	Map<String, ArrayList<Node>> map = new HashMap<String, ArrayList<Node>>();
-    	
-    	for ( Node n : node )
-    	{
-    		ArrayList<Node> al = new ArrayList<Node>();
-    		al.add(n);
-    		
-    		map.put(n.getId(), al);
-    	}
-    }
-    
-    List<Node> BuildTreeAndGetRoots(List<Node> actualObjects)
-    {
-        Map<String, Node> lookup = new HashMap<String, Node>();
-        List<Node> rootNodes = new ArrayList<Node>();
+		}
 
-        for (Node item : actualObjects)
+        int twins = 0;
+        Node twin1 = null;
+        Node twin2 = null;
+        
+        for ( List<Node> node : map.values() )
         {
-            // add us to lookup
-            Node ourNode = lookup.get( item.getId() );
-            
-            lookup.
-            
-            if ( ourNode != null )
-            {   // was already found as a parent - register the actual object
-                ourNode.Source = item;
-            }
-            else
-            {
-                ourNode = new Node() { Source = item };
-                lookup.Add(item.ID, ourNode);
-            }
-
-            // hook into parent
-            if (item.ParentID == item.ID)
-            {   // is a root node
-                rootNodes.Add(ourNode);
-            }
-            else
-            {   // is a child row - so we have a parent
-                Node parentNode;
-                if (!lookup.TryGetValue(item.ParentID, out parentNode))
-                {   // unknown parent, construct preliminary parent
-                    parentNode = new Node();
-                    lookup.Add(item.ParentID, parentNode);
-                }
-                parentNode.Children.Add(ourNode);
-            }
+    	    if ( node.size() == 2 )
+    	    {
+    	    	++twins;
+    	    	twin1 = node.get(0);
+    	    	twin2 = node.get(1);
+    	    }
+    	    else if ( node.size() > 2 )
+    	    	throw new Exception("one parent has more than 2 childs");
         }
 
-        return rootNodes;
-    }
+        if ( twins != 1 )
+            throw new Exception("twins more than 1 or none");
+
+        for (String key : map.keySet()) 
+        {
+        	if ( key == twin1.getId() || key == twin2.getId() )
+        		throw new Exception("twins has childs");
+        }
+        
+        System.out.println("Validation OK");
+	}
     
-    public static void main(String[] args)
+    public static void main(String[] args) throws Exception
 	{
     	ArrayList<Node> nodes = new ArrayList<Node>();
-    	nodes.add( new Node("1000", "1001") );
-    	nodes.add( new Node("1001", "1002") );
-    	nodes.add( new Node("1002", "1003") );
-    	nodes.add( new Node("1003", "1001") );
-    	nodes.add( new Node("1003", "1000") );
+    	nodes.add( new Node("1000", "") );
+    	nodes.add( new Node("1001", "1000") );
+    	nodes.add( new Node("1002", "1001") );
+    	nodes.add( new Node("1003", "1002") );
+    	nodes.add( new Node("1004", "1002") );
     	
-    	constructTree( nodes );
-
-    	Node root;
-    	
-    	final Map<String, List<Node>> map = getMap (nodes);
-        root = map.get(null).get(0);
-
-        constructTree ( map , root);
-    	
-    	
-    	
-//    	validateMethod(nodes);
+    	validateMethod(nodes);
 	}
 }
